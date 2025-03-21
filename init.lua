@@ -730,7 +730,6 @@ require('lazy').setup({
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`
     'catppuccin/nvim',
-    name = 'catppuccin',
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
@@ -740,7 +739,7 @@ require('lazy').setup({
       vim.cmd.colorscheme 'catppuccin-macchiato'
 
       -- You can configure highlights by doing something like
-      -- vim.cmd.hi 'Comment gui=none'
+      vim.cmd.hi 'Comment gui=none'
     end,
   },
 
@@ -810,6 +809,56 @@ require('lazy').setup({
   },
   {
     'tpope/vim-fugitive',
+  },
+  {
+    'mfussenegger/nvim-dap',
+    config = function()
+      local dap = require 'dap'
+      dap.adapters.cppdbg = {
+        id = 'cppdbg',
+        type = 'executable',
+        command = 'OpenDebugAD7',
+      }
+      dap.configurations.cpp = {
+        {
+          name = 'Launch file',
+          type = 'cppdbg',
+          request = 'launch',
+          program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+          end,
+          cwd = '${workspaceFolder}',
+          stopAtEntry = true,
+        },
+      }
+    end,
+    vim.keymap.set('n', '<F5>', function()
+      require('dap').continue()
+    end),
+    vim.keymap.set('n', '<F6>', function()
+      require('dap').step_over()
+    end),
+    vim.keymap.set('n', '<F7>', function()
+      require('dap').step_into()
+    end),
+    vim.keymap.set('n', '<F8>', function()
+      require('dap').step_out()
+    end),
+    vim.keymap.set('n', '<Leader>b', function()
+      require('dap').toggle_breakpoint()
+    end),
+    vim.keymap.set('n', '<Leader>B', function()
+      require('dap').set_breakpoint()
+    end),
+    vim.keymap.set('n', '<Leader>lp', function()
+      require('dap').set_breakpoint(nil, nil, vim.fn.input 'Log point message: ')
+    end),
+    vim.keymap.set('n', '<Leader>dr', function()
+      require('dap').repl.open()
+    end),
+    vim.keymap.set('n', '<Leader>dl', function()
+      require('dap').run_last()
+    end),
   },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
